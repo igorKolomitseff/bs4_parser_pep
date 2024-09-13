@@ -11,8 +11,10 @@ from constants import (
     BASE_DIR,
     BS4_PARSER,
     DOWNLOAD_URL_POSTFIX,
+    EXPECTED_STATUSES,
     FILE_FORMAT_PATTERN,
     MAIN_DOC_URL,
+    PEP_URL,
     TEXT_LINK_PATTERN,
     WHATS_NEW_URL_POSTFIX
 )
@@ -127,10 +129,67 @@ def download(session):
     logging.info(f'Архив был загружен и сохранён: {archive_path}')
 
 
+def pep(session):
+    response = get_response(session, PEP_URL)
+    if response is None:
+        return
+
+    soup = BeautifulSoup(response.text, features=BS4_PARSER)
+    main_section = find_tag(
+        soup,
+        'section',
+        {'id': 'numerical-index'}
+    )
+    table = find_tag(
+        main_section,
+        'table',
+        {'class': 'pep-zero-table'}
+    )
+    section_by_pep = table.tbody.find_all('tr')
+    statuses_with_counts = {}
+    for row in tqdm(section_by_pep):
+        expected_status = find_tag(row, 'abbr').text[1:]
+        pep_link = urljoin(PEP_URL, find_tag(row, 'a')['href'])
+        response = get_response(session, pep_link)
+        if response is None:
+            continue
+
+        soup = BeautifulSoup(response.text, features=BS4_PARSER)
+        dt_tag = find_tag(
+            soup,
+            string=re.compile('Status'),
+            find_type='find_parent'
+        )
+        current_status = find_tag(dt_tag, find_type='find_next_sibling').text
+        if current_status not in statuses_with_counts:
+            statuses_with_counts[current_status] = 1
+        else:
+            statuses_with_counts[current_status] += 1
+        if current_status not in EXPECTED_STATUSES[expected_status]:
+            logging.info(
+                'Несовпадающие статусы:\n'
+                f'{pep_link}\n'
+                f'Статус в карточке: {current_status}\n'
+                f'Ожидаемые статусы: {EXPECTED_STATUSES[expected_status]}\n'
+            )
+
+    results = [('Статус', 'Количество')]
+    results.extend(
+        sorted(
+            statuses_with_counts.items(),
+            key=lambda item: item[1],
+            reverse=True
+        )
+    )
+    results.append(('Total', sum(statuses_with_counts.values())))
+    return results
+
+
 MODE_TO_FUNCTION = {
     'whats-new': whats_new,
     'latest-versions': latest_versions,
     'download': download,
+    'pep': pep
 }
 
 
