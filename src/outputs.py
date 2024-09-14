@@ -1,9 +1,16 @@
 import csv
 import datetime as dt
+import logging
 
 from prettytable import PrettyTable
 
-from constants import BASE_DIR, DATETIME_FORMAT
+from constants import (
+    BASE_DIR,
+    FILE_DATETIME_FORMAT,
+    OUTPUT_FILE,
+    RESULTS_DIR,
+    SUCCESS_FILE_CREATED
+)
 
 
 def pretty_output(results):
@@ -15,16 +22,16 @@ def pretty_output(results):
 
 
 def file_output(results, cli_args):
-    results_dir = BASE_DIR / 'results'
+    results_dir = BASE_DIR / RESULTS_DIR
     results_dir.mkdir(exist_ok=True)
-    parser_mode = cli_args.mode
-    now = dt.datetime.now()
-    now_formatted = now.strftime(DATETIME_FORMAT)
-    file_name = f'{parser_mode}_{now_formatted}.csv'
-    file_path = results_dir / file_name
-    with open(file_path, 'w', encoding='utf-8') as f:
-        writer = csv.writer(f, dialect='unix')
+    file_path = results_dir / OUTPUT_FILE.format(
+        parser_mode=cli_args.mode,
+        now_formatted=dt.datetime.now().strftime(FILE_DATETIME_FORMAT)
+    )
+    with open(file_path, 'w', encoding='utf-8') as csv_file:
+        writer = csv.writer(csv_file, dialect='unix')
         writer.writerows(results)
+    logging.info(SUCCESS_FILE_CREATED.format(file_path=file_path))
 
 
 def default_output(results):

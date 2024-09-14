@@ -2,6 +2,7 @@ import logging
 
 from requests import RequestException
 
+from constants import NOT_FIND_TAG_ERROR, REQUEST_ERROR
 from exceptions import ParserFindTagException
 
 
@@ -12,7 +13,7 @@ def get_response(session, url):
         return response
     except RequestException:
         logging.exception(
-            f'Возникла ошибка при загрузке страницы {url}',
+            REQUEST_ERROR.format(url=url),
             stack_info=True
         )
 
@@ -39,7 +40,11 @@ def find_tag(soup, tag=None, attrs=None, string='', find_type='find'):
             'Используйте "find", "find_parent" или "find_next_sibling".'
         )
     if searched_tag is None:
-        error_msg = f'Не найден тег {tag} {attrs}'
-        logging.error(error_msg, stack_info=True)
-        raise ParserFindTagException(error_msg)
+        logging.error(
+            NOT_FIND_TAG_ERROR.format(tag=tag, attrs=attrs, string=string),
+            stack_info=True
+        )
+        raise ParserFindTagException(
+            NOT_FIND_TAG_ERROR.format(tag=tag, attrs=attrs, string=string)
+        )
     return searched_tag

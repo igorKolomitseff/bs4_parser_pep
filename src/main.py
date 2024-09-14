@@ -10,14 +10,25 @@ from configs import configure_argument_parser, configure_logging
 from constants import (
     BASE_DIR,
     BS4_PARSER,
+    CLI_ARGS_INFO,
     DOWNLOAD_URL_POSTFIX,
-    EXPECTED_STATUSES,
+    EXPECTED_STATUS,
     FILE_FORMAT_PATTERN,
+    FINISH_PARSER_WORKING_INFO,
+    LATEST_VERSIONS_TABLE_COLUMN_HEADERS,
+    PEP_TABLE_COLUMN_HEADERS,
     MAIN_DOC_URL,
+    MISMATCHED_STATUSES,
+    NOT_FIND_TAG_ERROR,
     PEP_URL,
+    START_PARSER_WORKING_INFO,
+    SUCCESS_ARCHIVE_DOWNLOAD,
     TEXT_LINK_PATTERN,
+    WHATS_NEW_TABLE_COLUMN_HEADERS,
     WHATS_NEW_URL_POSTFIX
+
 )
+from exceptions import ParserFindTagException
 from outputs import control_output
 from utils import get_response, find_tag
 
@@ -44,7 +55,7 @@ def whats_new(session):
         attrs={'class': 'toctree-l1'}
     )
 
-    results = [('Ссылка на статью', 'Заголовок', 'Редактор, автор')]
+    results = [WHATS_NEW_TABLE_COLUMN_HEADERS]
     for section in tqdm(sections_by_python):
         version_link = urljoin(whats_new_url, find_tag(section, 'a')['href'])
         response = get_response(session, version_link)
@@ -59,7 +70,6 @@ def whats_new(session):
                 find_tag(soup, 'dl').text.replace('\n', ' ')
             )
         )
-
     return results
 
 
@@ -76,9 +86,15 @@ def latest_versions(session):
             a_tags = ul.find_all(name='a')
             break
     else:
-        raise Exception('Ничего не нашлось')
+        logging.error(
+            NOT_FIND_TAG_ERROR.format(tag='ul', attrs=None, string=''),
+            stack_info=True
+        )
+        raise ParserFindTagException(
+            NOT_FIND_TAG_ERROR.format(tag='ul', attrs=None, string='')
+        )
 
-    results = [('Ссылка на документацию', 'Версия', 'Статус')]
+    results = [LATEST_VERSIONS_TABLE_COLUMN_HEADERS]
     for a_tag in a_tags:
         link = a_tag['href']
         text_match = re.search(TEXT_LINK_PATTERN, a_tag.text)
@@ -86,9 +102,7 @@ def latest_versions(session):
             version, status = text_match.groups()
         else:
             version, status = a_tag.text, ''
-
         results.append((link, version, status))
-
     return results
 
 
@@ -126,7 +140,9 @@ def download(session):
     archive_path = downloads_dir / filename
     with open(archive_path, 'wb') as zip_file:
         zip_file.write(response.content)
-    logging.info(f'Архив был загружен и сохранён: {archive_path}')
+    logging.info(
+        SUCCESS_ARCHIVE_DOWNLOAD.format(archive_path=archive_path)
+    )
 
 
 def pep(session):
@@ -146,6 +162,7 @@ def pep(session):
         {'class': 'pep-zero-table'}
     )
     section_by_pep = table.tbody.find_all('tr')
+
     statuses_with_counts = {}
     for row in tqdm(section_by_pep):
         expected_status = find_tag(row, 'abbr').text[1:]
@@ -165,15 +182,16 @@ def pep(session):
             statuses_with_counts[current_status] = 1
         else:
             statuses_with_counts[current_status] += 1
-        if current_status not in EXPECTED_STATUSES[expected_status]:
+        if current_status not in EXPECTED_STATUS[expected_status]:
             logging.info(
-                'Несовпадающие статусы:\n'
-                f'{pep_link}\n'
-                f'Статус в карточке: {current_status}\n'
-                f'Ожидаемые статусы: {EXPECTED_STATUSES[expected_status]}\n'
+                MISMATCHED_STATUSES.format(
+                    pep_link=pep_link,
+                    current_status=current_status,
+                    expected_status=EXPECTED_STATUS[expected_status]
+                )
             )
 
-    results = [('Статус', 'Количество')]
+    results = [PEP_TABLE_COLUMN_HEADERS]
     results.extend(
         sorted(
             statuses_with_counts.items(),
@@ -195,17 +213,17 @@ MODE_TO_FUNCTION = {
 
 def main():
     configure_logging()
-    logging.info('Парсер запущен!')
+    logging.info(START_PARSER_WORKING_INFO)
     arg_parser = configure_argument_parser(MODE_TO_FUNCTION.keys())
     args = arg_parser.parse_args()
-    logging.info(f'Аргументы командной строки: {args}')
+    logging.info(CLI_ARGS_INFO.format(args=args))
     session = requests_cache.CachedSession()
     if args.clear_cache:
         session.cache.clear()
     results = MODE_TO_FUNCTION[args.mode](session)
     if results is not None:
         control_output(results, args)
-    logging.info('Парсер завершил работу.')
+    logging.info(FINISH_PARSER_WORKING_INFO)
 
 
 if __name__ == '__main__':
