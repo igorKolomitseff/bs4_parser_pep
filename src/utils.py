@@ -1,12 +1,22 @@
 import logging
+from typing import Optional
 
+from bs4 import BeautifulSoup
 from requests import RequestException
+from requests_cache import AnyResponse, CachedSession
 
 from constants import NOT_FIND_TAG_ERROR, REQUEST_ERROR
 from exceptions import ParserFindTagException
 
 
-def get_response(session, url):
+def get_response(session: CachedSession, url: str) -> Optional[AnyResponse]:
+    """Получает ответ с сайта по url.
+    Если ответа нет, то логирует исключение.
+
+    Параметры:
+        session: Сессия для запросов к сайту.
+        url: URL для запроса.
+    """
     try:
         response = session.get(url)
         response.encoding = 'utf-8'
@@ -18,7 +28,23 @@ def get_response(session, url):
         )
 
 
-def find_tag(soup, tag=None, attrs=None, string='', find_type='find'):
+def find_tag(
+    soup: BeautifulSoup,
+    tag: Optional[str] = None,
+    attrs: Optional[dict] = None,
+    string: str = '',
+    find_type: str = 'find'
+):
+    """Получает тег по заданным атрибутам.
+    Если тег не находит, то логирует и выбрасывает исключение.
+
+    Параметры:
+        soup: Проанализированный HTML документ.
+        tag: HTML Тег.
+        attrs: Атрибуты тега.
+        string: Текст в теге.
+        find_type: Тип поиска.
+    """
     if find_type == 'find':
         searched_tag = soup.find(
             tag,

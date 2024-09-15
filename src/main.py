@@ -1,9 +1,10 @@
 import logging
 import re
+from typing import List, Tuple
 from urllib.parse import urljoin
 
-import requests_cache
 from bs4 import BeautifulSoup
+from requests_cache import CachedSession
 from tqdm import tqdm
 
 from configs import configure_argument_parser, configure_logging
@@ -33,7 +34,12 @@ from outputs import control_output
 from utils import get_response, find_tag
 
 
-def whats_new(session):
+def whats_new(session: CachedSession) -> List[Tuple[str, ...]]:
+    """Собирает информацию о нововведениях в версиях Python.
+
+    Параметры:
+        session: Сессия для запросов к сайту.
+    """
     whats_new_url = urljoin(MAIN_DOC_URL, WHATS_NEW_URL_POSTFIX)
     response = get_response(session, whats_new_url)
     if response is None:
@@ -73,7 +79,12 @@ def whats_new(session):
     return results
 
 
-def latest_versions(session):
+def latest_versions(session: CachedSession) -> List[Tuple[str, ...]]:
+    """Собирает информацию о версиях Python.
+
+    Параметры:
+        session: Сессия для запросов к сайту.
+    """
     response = get_response(session, MAIN_DOC_URL)
     if response is None:
         return
@@ -106,7 +117,12 @@ def latest_versions(session):
     return results
 
 
-def download(session):
+def download(session: CachedSession) -> List[Tuple[str, ...]]:
+    """Скачивает архив с документацией Python.
+
+    Параметры:
+        session: Сессия для запросов к сайту.
+    """
     downloads_url = urljoin(MAIN_DOC_URL, DOWNLOAD_URL_POSTFIX)
     response = get_response(session, downloads_url)
     if response is None:
@@ -145,7 +161,12 @@ def download(session):
     )
 
 
-def pep(session):
+def pep(session: CachedSession) -> List[Tuple[str, ...]]:
+    """Собирает информацию о документах PEP.
+
+    Параметры:
+        session: Сессия для запросов к сайту.
+    """
     response = get_response(session, PEP_URL)
     if response is None:
         return
@@ -211,13 +232,14 @@ MODE_TO_FUNCTION = {
 }
 
 
-def main():
+def main() -> None:
+    """Запускает скрипт парсера."""
     configure_logging()
     logging.info(START_PARSER_WORKING_INFO)
     arg_parser = configure_argument_parser(MODE_TO_FUNCTION.keys())
     args = arg_parser.parse_args()
     logging.info(CLI_ARGS_INFO.format(args=args))
-    session = requests_cache.CachedSession()
+    session = CachedSession()
     if args.clear_cache:
         session.cache.clear()
     results = MODE_TO_FUNCTION[args.mode](session)

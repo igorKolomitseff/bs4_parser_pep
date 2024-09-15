@@ -1,6 +1,7 @@
 import argparse
 import logging
 from logging.handlers import RotatingFileHandler
+from typing import KeysView
 
 from constants import (
     LOG_DATETIME_FORMAT,
@@ -10,7 +11,15 @@ from constants import (
 )
 
 
-def configure_argument_parser(available_modes):
+def configure_argument_parser(
+    available_modes: KeysView[str]
+) -> argparse.ArgumentParser:
+    """
+    Настраивает парсинг аргументов командной строки.
+
+    Параметры:
+        available_modes: Режимы работы парсера.
+    """
     parser = argparse.ArgumentParser(description='Парсер документации Python')
     parser.add_argument(
         'mode',
@@ -32,7 +41,8 @@ def configure_argument_parser(available_modes):
     return parser
 
 
-def configure_logging():
+def configure_logging() -> None:
+    """Настраивает логирование."""
     LOG_DIR.mkdir(exist_ok=True)
     logging.basicConfig(
         datefmt=LOG_DATETIME_FORMAT,
