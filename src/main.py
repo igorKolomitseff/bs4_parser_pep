@@ -80,7 +80,7 @@ def whats_new(session: CachedSession) -> List[Tuple[str, ...]]:
 
 
 def latest_versions(session: CachedSession) -> List[Tuple[str, ...]]:
-    """Собирает информацию о версиях Python.
+    """Собирает информацию о статусах версий Python.
 
     Параметры:
         session: Сессия для запросов к сайту.
@@ -162,7 +162,7 @@ def download(session: CachedSession) -> List[Tuple[str, ...]]:
 
 
 def pep(session: CachedSession) -> List[Tuple[str, ...]]:
-    """Собирает информацию о документах PEP.
+    """Собирает информацию о статусах документов PEP.
 
     Параметры:
         session: Сессия для запросов к сайту.
