@@ -18,23 +18,23 @@
 ## Как развернуть проект
 1. Клонируйте репозиторий и перейдите в директорию bs4_parser_pep
 ```bash
-git git@github.com:igorKolomitseff/bs4_parser_pep.git
+git clone git@github.com:igorKolomitseff/bs4_parser_pep.git
 cd bs4_parser_pep
 ```
 
-2. Создать виртуальное окружение и его активировать:
+2. Создайте виртуальное окружение и активируйте его:
 ```bash
 python3 -m venv venv
 source venv/bin/activate  # Для Linux и macOS
 source venv/Scripts/activate  # Для Windows
 ```
-3. Обновить pip и установить зависимости проекта:
+3. Обновите pip и установите зависимости проекта:
 ```bash
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-4. перейти в директорию src:
+4. Перейдите в директорию src:
 ```bash
 cd src/
 ```
