@@ -15,7 +15,7 @@ from constants import (
 )
 
 
-def pretty_output(results: List[Tuple[str, ...]]) -> None:
+def pretty_output(results: List[Tuple[str, ...]], *args) -> None:
     """
     Выводит данные в терминал в формате PrettyTable.
 
@@ -43,12 +43,12 @@ def file_output(results: List[Tuple[str, ...]], cli_args: Namespace) -> None:
         now_formatted=dt.datetime.now().strftime(FILE_DATETIME_FORMAT)
     )
     with open(file_path, 'w', encoding='utf-8') as csv_file:
-        writer = csv.writer(csv_file, dialect='unix')
+        writer = csv.writer(csv_file, dialect=csv.unix_dialect)
         writer.writerows(results)
     logging.info(SUCCESS_FILE_CREATED.format(file_path=file_path))
 
 
-def default_output(results: List[Tuple[str, ...]]) -> None:
+def default_output(results: List[Tuple[str, ...]], *args) -> None:
     """
     Выводит данные в терминал построчно.
 
@@ -57,6 +57,12 @@ def default_output(results: List[Tuple[str, ...]]) -> None:
     """
     for row in results:
         print(*row)
+
+
+OUTPUT_TO_FUNCTION = {
+    'pretty': pretty_output,
+    'file': file_output
+}
 
 
 def control_output(
@@ -69,10 +75,4 @@ def control_output(
         results: Результаты парсинга.
         cli_args: Аргументы командной строки.
     """
-    output = cli_args.output
-    if output == 'pretty':
-        pretty_output(results)
-    elif output == 'file':
-        file_output(results, cli_args)
-    else:
-        default_output(results)
+    OUTPUT_TO_FUNCTION.get(cli_args.output, default_output)(results, cli_args)
