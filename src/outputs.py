@@ -10,6 +10,8 @@ from constants import (
     BASE_DIR,
     FILE_DATETIME_FORMAT,
     OUTPUT_FILE,
+    OUTPUT_TO_FILE,
+    OUTPUT_TO_PRETTY_TABLE,
     RESULTS_DIR,
     SUCCESS_FILE_CREATED
 )
@@ -60,8 +62,8 @@ def default_output(results: List[Tuple[str, ...]], *args) -> None:
 
 
 OUTPUT_TO_FUNCTION = {
-    'pretty': pretty_output,
-    'file': file_output
+    OUTPUT_TO_PRETTY_TABLE: pretty_output,
+    OUTPUT_TO_FILE: file_output
 }
 
 

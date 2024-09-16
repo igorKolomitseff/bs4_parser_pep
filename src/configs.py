@@ -7,7 +7,9 @@ from constants import (
     LOG_DATETIME_FORMAT,
     LOG_DIR,
     LOG_FILE,
-    LOG_OUTPUT_FORMAT
+    LOG_OUTPUT_FORMAT,
+    OUTPUT_TO_FILE,
+    OUTPUT_TO_PRETTY_TABLE
 )
 
 
@@ -35,7 +37,7 @@ def configure_argument_parser(
     parser.add_argument(
         '-o',
         '--output',
-        choices=('pretty', 'file'),
+        choices=(OUTPUT_TO_PRETTY_TABLE, OUTPUT_TO_FILE),
         help='Дополнительные способы вывода данных'
     )
     return parser

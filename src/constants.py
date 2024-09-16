@@ -27,7 +27,8 @@ EXPECTED_STATUS = {
     'W': ('Withdrawn',),
     '': ('Draft', 'Active'),
 }
-
+OUTPUT_TO_FILE = 'file'
+OUTPUT_TO_PRETTY_TABLE = 'pretty'
 WHATS_NEW_TABLE_COLUMN_HEADERS = (
     'Ссылка на статью', 'Заголовок', 'Редактор, автор'
 )
