@@ -112,7 +112,7 @@ def latest_versions(session: CachedSession) -> List[Tuple[str, ...]]:
     return results
 
 
-def download(session: CachedSession) -> List[Tuple[str, ...]]:
+def download(session: CachedSession) -> None:
     """Скачивает архив с документацией Python.
 
     Параметры:
