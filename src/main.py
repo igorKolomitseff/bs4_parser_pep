@@ -12,22 +12,22 @@ from constants import (
     BASE_DIR,
     BS4_PARSER,
     CLI_ARGS_INFO,
+    DOWNLOADS_DIR,
     DOWNLOAD_URL_POSTFIX,
     EXPECTED_STATUS,
     FILE_FORMAT_PATTERN,
     FINISH_PARSER_WORKING_INFO,
     LATEST_VERSIONS_TABLE_COLUMN_HEADERS,
-    PEP_TABLE_COLUMN_HEADERS,
     MAIN_DOC_URL,
     MISMATCHED_STATUSES,
     NOT_FIND_TAG_ERROR,
+    PEP_TABLE_COLUMN_HEADERS,
     PEP_URL,
     START_PARSER_WORKING_INFO,
     SUCCESS_ARCHIVE_DOWNLOAD,
     TEXT_LINK_PATTERN,
     WHATS_NEW_TABLE_COLUMN_HEADERS,
     WHATS_NEW_URL_POSTFIX
-
 )
 from exceptions import ParserFindTagException
 from outputs import control_output
@@ -44,7 +44,6 @@ def whats_new(session: CachedSession) -> List[Tuple[str, ...]]:
     response = get_response(session, whats_new_url)
     if response is None:
         return
-
     soup = BeautifulSoup(response.text, features=BS4_PARSER)
     main_section = find_tag(
         soup,
@@ -60,14 +59,12 @@ def whats_new(session: CachedSession) -> List[Tuple[str, ...]]:
         'li',
         attrs={'class': 'toctree-l1'}
     )
-
     results = [WHATS_NEW_TABLE_COLUMN_HEADERS]
     for section in tqdm(sections_by_python):
         version_link = urljoin(whats_new_url, find_tag(section, 'a')['href'])
         response = get_response(session, version_link)
         if response is None:
             continue
-
         soup = BeautifulSoup(response.text, features=BS4_PARSER)
         results.append(
             (
@@ -88,7 +85,6 @@ def latest_versions(session: CachedSession) -> List[Tuple[str, ...]]:
     response = get_response(session, MAIN_DOC_URL)
     if response is None:
         return
-
     soup = BeautifulSoup(response.text, features=BS4_PARSER)
     sidebar = find_tag(soup, 'div', attrs={'class': 'sphinxsidebarwrapper'})
     ul_tags = sidebar.find_all('ul')
@@ -104,7 +100,6 @@ def latest_versions(session: CachedSession) -> List[Tuple[str, ...]]:
         raise ParserFindTagException(
             NOT_FIND_TAG_ERROR.format(tag='ul', attrs=None, string='')
         )
-
     results = [LATEST_VERSIONS_TABLE_COLUMN_HEADERS]
     for a_tag in a_tags:
         link = a_tag['href']
@@ -127,7 +122,6 @@ def download(session: CachedSession) -> List[Tuple[str, ...]]:
     response = get_response(session, downloads_url)
     if response is None:
         return
-
     soup = BeautifulSoup(response.text, features=BS4_PARSER)
     main_tag = find_tag(
         soup,
@@ -144,14 +138,12 @@ def download(session: CachedSession) -> List[Tuple[str, ...]]:
         'a',
         {'href': re.compile(FILE_FORMAT_PATTERN)}
     )
-
     archive_url = urljoin(downloads_url, pdf_a4_tag['href'])
     response = get_response(session, archive_url)
     if response is None:
         return
-
     filename = archive_url.split('/')[-1]
-    downloads_dir = BASE_DIR / 'downloads'
+    downloads_dir = BASE_DIR / DOWNLOADS_DIR
     downloads_dir.mkdir(exist_ok=True)
     archive_path = downloads_dir / filename
     with open(archive_path, 'wb') as zip_file:
@@ -170,7 +162,6 @@ def pep(session: CachedSession) -> List[Tuple[str, ...]]:
     response = get_response(session, PEP_URL)
     if response is None:
         return
-
     soup = BeautifulSoup(response.text, features=BS4_PARSER)
     main_section = find_tag(
         soup,
@@ -183,7 +174,6 @@ def pep(session: CachedSession) -> List[Tuple[str, ...]]:
         {'class': 'pep-zero-table'}
     )
     section_by_pep = table.tbody.find_all('tr')
-
     statuses_with_counts = {}
     for row in tqdm(section_by_pep):
         expected_status = find_tag(row, 'abbr').text[1:]
@@ -191,7 +181,6 @@ def pep(session: CachedSession) -> List[Tuple[str, ...]]:
         response = get_response(session, pep_link)
         if response is None:
             continue
-
         soup = BeautifulSoup(response.text, features=BS4_PARSER)
         dt_tag = find_tag(
             soup,
@@ -211,7 +200,6 @@ def pep(session: CachedSession) -> List[Tuple[str, ...]]:
                     expected_status=EXPECTED_STATUS[expected_status]
                 )
             )
-
     results = [PEP_TABLE_COLUMN_HEADERS]
     results.extend(
         sorted(

@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from requests import RequestException
 from requests_cache import AnyResponse, CachedSession
 
-from constants import NOT_FIND_TAG_ERROR, REQUEST_ERROR
+from constants import NOT_FIND_TAG_ERROR, REQUEST_ERROR, WRONG_FIND_TYPE
 from exceptions import ParserFindTagException
 
 
@@ -61,10 +61,8 @@ def find_tag(
     elif find_type == 'find_next_sibling':
         searched_tag = soup.find_next_sibling()
     else:
-        raise ValueError(
-            'Неверный тип поиска. '
-            'Используйте "find", "find_parent" или "find_next_sibling".'
-        )
+        logging.error(WRONG_FIND_TYPE, stack_info=True)
+        raise ValueError(WRONG_FIND_TYPE)
     if searched_tag is None:
         logging.error(
             NOT_FIND_TAG_ERROR.format(tag=tag, attrs=attrs, string=string),

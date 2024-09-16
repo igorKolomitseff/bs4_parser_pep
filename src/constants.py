@@ -4,6 +4,7 @@ BASE_DIR = Path(__file__).parent
 LOG_DIR = BASE_DIR / 'logs'
 LOG_FILE = LOG_DIR / 'parser.log'
 RESULTS_DIR = 'results'
+DOWNLOADS_DIR = 'downloads'
 OUTPUT_FILE = '{parser_mode}_{now_formatted}.csv'
 
 BS4_PARSER = 'lxml'
@@ -49,6 +50,7 @@ START_PARSER_WORKING_INFO = 'Парсер запущен!'
 CLI_ARGS_INFO = 'Аргументы командной строки: {args}'
 FINISH_PARSER_WORKING_INFO = 'Парсер завершил работу.'
 REQUEST_ERROR = 'Возникла ошибка при загрузке страницы {url}'
+WRONG_FIND_TYPE = 'Неверный тип поиска'
 NOT_FIND_TAG_ERROR = 'Не найден тег {tag} {attrs} {string}'
 SUCCESS_FILE_CREATED = (
     'Файл с результатами был сохранён: {file_path}'
