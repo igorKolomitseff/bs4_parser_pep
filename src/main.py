@@ -4,7 +4,6 @@ from collections import defaultdict
 from typing import List, Tuple
 from urllib.parse import urljoin
 
-from requests import RequestException
 from requests_cache import CachedSession
 from tqdm import tqdm
 
@@ -68,7 +67,7 @@ def whats_new(session: CachedSession) -> List[Tuple[str, ...]]:
         version_link = urljoin(whats_new_url, a_tag['href'])
         try:
             soup = get_soup(session, version_link)
-        except RequestException as error:
+        except ConnectionError as error:
             unavailable_links.append(
                 REQUEST_ERROR.format(url=version_link, error=error)
             )
@@ -158,7 +157,7 @@ def pep(session: CachedSession) -> List[Tuple[str, ...]]:
         pep_link = urljoin(PEP_URL, find_tag(row, 'a')['href'])
         try:
             soup = get_soup(session, pep_link)
-        except RequestException as error:
+        except ConnectionError as error:
             unavailable_links.append(
                 REQUEST_ERROR.format(url=pep_link, error=error)
             )
