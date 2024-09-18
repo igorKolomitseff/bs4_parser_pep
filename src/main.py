@@ -39,6 +39,7 @@ MISMATCHED_STATUS = (
     'Статус в карточке: {current_status}\n'
     'Ожидаемые статусы: {expected_status}\n'
 )
+MAIN_ERROR_MESSAGE = 'Сбой в работе программы: {error}'
 
 WHATS_NEW_TABLE_COLUMN_HEADERS = (
     'Ссылка на статью', 'Заголовок', 'Редактор, автор'
@@ -212,7 +213,10 @@ def main() -> None:
             control_output(results, args)
         logging.info(FINISH_PARSER_WORKING)
     except Exception as error:
-        logging.exception(f'Сбой в работе программы: {error}', stack_info=True)
+        logging.exception(
+            MAIN_ERROR_MESSAGE.format(error=error),
+            stack_info=True
+    )
 
 
 if __name__ == '__main__':
