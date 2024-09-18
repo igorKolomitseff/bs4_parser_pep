@@ -12,9 +12,10 @@ from constants import (
     OUTPUT_FILE,
     OUTPUT_TO_FILE,
     OUTPUT_TO_PRETTY_TABLE,
-    RESULTS_DIR,
-    SUCCESS_FILE_CREATED
+    RESULTS_DIR
 )
+
+SUCCESS_FILE_CREATED = 'Файл с результатами был сохранён: {file_path}'
 
 
 def pretty_output(results: List[Tuple[str, ...]], *args) -> None:
