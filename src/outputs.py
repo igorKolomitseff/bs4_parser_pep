@@ -64,7 +64,8 @@ def default_output(results: List[Tuple[str, ...]], *args) -> None:
 
 OUTPUT_TO_FUNCTION = {
     OUTPUT_TO_PRETTY_TABLE: pretty_output,
-    OUTPUT_TO_FILE: file_output
+    OUTPUT_TO_FILE: file_output,
+    None: default_output
 }
 
 
@@ -78,4 +79,4 @@ def control_output(
         results: Результаты парсинга.
         cli_args: Аргументы командной строки.
     """
-    OUTPUT_TO_FUNCTION.get(cli_args.output, default_output)(results, cli_args)
+    OUTPUT_TO_FUNCTION[cli_args.output](results, cli_args)
