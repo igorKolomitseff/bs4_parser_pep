@@ -216,7 +216,7 @@ def main() -> None:
         logging.exception(
             MAIN_ERROR_MESSAGE.format(error=error),
             stack_info=True
-    )
+        )
 
 
 if __name__ == '__main__':
