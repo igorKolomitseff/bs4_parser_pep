@@ -7,15 +7,16 @@ RESULTS_DIR = 'results'
 DOWNLOADS_DIR = 'downloads'
 OUTPUT_FILE = '{parser_mode}_{now_formatted}.csv'
 
-BS4_PARSER = 'lxml'
-
 MAIN_DOC_URL = 'https://docs.python.org/3/'
 PEP_URL = 'https://peps.python.org/'
 WHATS_NEW_URL_POSTFIX = 'whatsnew/'
 DOWNLOAD_URL_POSTFIX = 'download.html'
 
-TEXT_LINK_PATTERN = r'Python (?P<version>\d\.\d+) \((?P<status>.*)\)'
-FILE_FORMAT_PATTERN = r'.+pdf-a4\.zip$'
+FIND_TAG_BY_NAME = 'find_tag_by_name'
+FIND_TAG_BY_STRING = 'find_tag_by_string'
+FIND_NEXT_SIBLING = 'find_next_sibling'
+OUTPUT_TO_FILE = 'file'
+OUTPUT_TO_PRETTY_TABLE = 'pretty'
 
 EXPECTED_STATUS = {
     'A': ('Active', 'Accepted'),
@@ -27,41 +28,10 @@ EXPECTED_STATUS = {
     'W': ('Withdrawn',),
     '': ('Draft', 'Active'),
 }
-OUTPUT_TO_FILE = 'file'
-OUTPUT_TO_PRETTY_TABLE = 'pretty'
-WHATS_NEW_TABLE_COLUMN_HEADERS = (
-    'Ссылка на статью', 'Заголовок', 'Редактор, автор'
-)
-LATEST_VERSIONS_TABLE_COLUMN_HEADERS = (
-    'Ссылка на документацию', 'Версия', 'Статус'
-)
-PEP_TABLE_COLUMN_HEADERS = (
-    'Статус', 'Количество'
-)
 
+FILE_DATETIME_FORMAT = '%Y-%m-%d_%H-%M-%S'
 LOG_OUTPUT_FORMAT = (
     '%(asctime)s [%(levelname)s]: %(funcName)s, '
     'строка %(lineno)d - %(message)s'
 )
 LOG_DATETIME_FORMAT = '%d.%m.%Y %H:%M:%S'
-
-FILE_DATETIME_FORMAT = '%Y-%m-%d_%H-%M-%S'
-
-START_PARSER_WORKING_INFO = 'Парсер запущен!'
-CLI_ARGS_INFO = 'Аргументы командной строки: {args}'
-FINISH_PARSER_WORKING_INFO = 'Парсер завершил работу.'
-REQUEST_ERROR = 'Возникла ошибка при загрузке страницы {url}'
-WRONG_FIND_TYPE = 'Неверный тип поиска'
-NOT_FIND_TAG_ERROR = 'Не найден тег {tag} {attrs} {string}'
-SUCCESS_FILE_CREATED = (
-    'Файл с результатами был сохранён: {file_path}'
-)
-SUCCESS_ARCHIVE_DOWNLOAD = (
-    'Архив был загружен и сохранён: {archive_path}'
-)
-MISMATCHED_STATUSES = (
-    'Несовпадающие статусы:\n'
-    '{pep_link}\n'
-    'Статус в карточке: {current_status}\n'
-    'Ожидаемые статусы: {expected_status}\n'
-)
