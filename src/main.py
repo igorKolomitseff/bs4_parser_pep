@@ -126,7 +126,7 @@ def download(session: CachedSession) -> None:
     if pdf_a4_tag is None:
         raise ParserFindTagException(
             NOT_FIND_TAG_ERROR.format(
-                tag='a', attrs={'href$': 'pdf-a4.zip'}
+                tag='a', attrs={'href$': 'pdf-a4.zip'}, string=None
             )
         )
     archive_url = urljoin(downloads_url, pdf_a4_tag['href'])
@@ -162,12 +162,14 @@ def pep(session: CachedSession) -> List[Tuple[str, ...]]:
                 REQUEST_ERROR.format(url=pep_link, error=error)
             )
             continue
-        dt_tag = find_tag(
-            soup,
-            string=re.compile('Status'),
-            find_type=FIND_TAG_BY_STRING
-        )
-        current_status = find_tag(dt_tag, find_type=FIND_NEXT_SIBLING).text
+        current_status = find_tag(
+            find_tag(
+                soup,
+                string=re.compile('Status'),
+                find_type=FIND_TAG_BY_STRING
+            ),
+            find_type=FIND_NEXT_SIBLING
+        ).text
         results[current_status] += 1
         if current_status not in EXPECTED_STATUS[expected_status]:
             mismatched_statuses.append(

@@ -19,7 +19,7 @@ def get_response(
     session: CachedSession,
     url: str,
     encoding: str = 'utf-8'
-) -> Optional[AnyResponse]:
+) -> AnyResponse:
     """Получает ответ с сайта по url.
     Если возникает ошибка при получении ответа, то вызывается исключение.
 
@@ -110,7 +110,7 @@ def find_tag(
     attrs: Optional[dict] = None,
     string: Optional[str] = None,
     find_type: str = FIND_TAG_BY_NAME
-) -> Optional[Tag]:
+) -> Tag:
     """Получает тег по заданным атрибутам.
     Если не находит тег, то выбрасывает исключение.
 
